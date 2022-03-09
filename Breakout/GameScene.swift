@@ -125,7 +125,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     func kickBall() {
         ball.physicsBody?.isDynamic = true
-        ball.physicsBody?.applyImpulse(CGVector(dx: 3, dy: 5))
+        ball.physicsBody?.applyImpulse(CGVector(dx: Int.random(in: -5...5), dy: 5))
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
@@ -160,6 +160,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 contact.bodyB.node == brick {
                 score += 1
                 updateLabels()
+                // increase ball velocity by 2%
+                ball.physicsBody!.velocity.dx = ball.physicsBody!.velocity.dx * CGFloat(1.02)
+                ball.physicsBody!.velocity.dy = ball.physicsBody!.velocity.dy * CGFloat(1.02)
                 if brick.color == .blue {
                     brick.color = .orange   // blue bricks turn orange
                 }
