@@ -77,8 +77,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     func makePaddle() {
         paddle.removeFromParent()   // remove the paddle, if it exists
-        paddle = SKSpriteNode(color: .white, size: CGSize(width: frame.width/4, height: 20))
-        paddle.position = CGPoint(x: frame.midX, y: frame.minY + 125)
+        paddle = SKSpriteNode(color: .white, size: CGSize(width: frame.width / 2, height: 20))
+        paddle.position = CGPoint(x: frame.midX, y: frame.minY + 75)
         paddle.name = "paddle"
         paddle.physicsBody = SKPhysicsBody(rectangleOf: paddle.size)
         paddle.physicsBody?.isDynamic = false
@@ -106,18 +106,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // now, figure the number and spacing of each row of bricks
         let count = Int(frame.width) / 55   // bricks per row
         let xOffset = (Int(frame.width) - (count * 55)) / 2 + Int(frame.minX) + 25
-        let colors: [UIColor] = [.blue, .orange, .green]
-        for r in 0..<3 {
+        let colors: [UIColor] = [.magenta, .purple, .blue, .blue, .orange, .orange, .green, .green, .green, .green]
+        for r in 0..<6 {
             let y = Int(frame.maxY) - 15 - (r * 25)
             for i in 0..<count {
                 let x = i * 55 + xOffset
-                makeBrick(x: x , y: y, color: colors[r])
+                makeBrick(x: x , y: y, color: colors[Int.random(in: 0...9)])
             }
         }
     }
     func makeLoseZone() {
-        loseZone = SKSpriteNode(color: .red, size: CGSize(width: frame.width, height: 50))
-        loseZone.position = CGPoint(x: frame.midX, y: frame.minY + 25)
+        loseZone = SKSpriteNode(color: .red, size: CGSize(width: frame.width, height: 10))
+        loseZone.position = CGPoint(x: frame.midX, y: frame.minY + 5)
         loseZone.name = "loseZone"
         loseZone.physicsBody = SKPhysicsBody(rectangleOf: loseZone.size)
         loseZone.physicsBody?.isDynamic = false
@@ -163,9 +163,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 score += 1
                 updateLabels()
                 // increase ball velocity by 2%
-                ball.physicsBody!.velocity.dx = ball.physicsBody!.velocity.dx * CGFloat(1.02)
-                ball.physicsBody!.velocity.dy = ball.physicsBody!.velocity.dy * CGFloat(1.02)
-                if brick.color == .blue {
+                ball.physicsBody!.velocity.dx = ball.physicsBody!.velocity.dx * CGFloat(1.0015)
+                ball.physicsBody!.velocity.dy = ball.physicsBody!.velocity.dy * CGFloat(1.0015)
+                //decrease paddle size
+                paddle.scale(to: CGSize(width: (frame.width / 2) - CGFloat(score), height: 20))
+                if brick.color == .magenta {
+                    brick.color = .purple
+                } else if brick.color == .purple {
+                    brick.color = .blue //purple bricks turn blue
+                } else if brick.color == .blue {
                     brick.color = .orange   // blue bricks turn orange
                 }
                 else if brick.color == .orange {
@@ -185,8 +191,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             contact.bodyB.node?.name == "loseZone" {
             lives -= 1
             if lives > 0 {
-                score = 0
-                resetGame()
+                makeBall()
+                updateLabels()
                 kickBall()
             }
             else {
